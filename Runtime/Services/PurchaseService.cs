@@ -27,7 +27,7 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             if (_isPurchasing) return;
 
-            if (!_iapService.CreateProductWrapper(offer.Id).CanPurchase) return;
+            if (!_iapService.GetProductWrapper(offer.Id).CanPurchase) return;
             
             _isPurchasing = true;
             _callback = callback;
@@ -36,14 +36,14 @@ namespace LittleBit.Modules.IAppModule.Services
             _iapService.Purchase(offer.Id);
         }
 
-        public IProductWrapper CreateProductWrapper(string id)
+        public IProductWrapper GetProductWrapper(string id)
         {
-            return _iapService.CreateProductWrapper(id);
+            return _iapService.GetProductWrapper(id);
         }
         
-        public IProductWrapper CreateProductWrapper(OfferConfig offerConfig)
+        public IProductWrapper GetProductWrapper(OfferConfig offerConfig)
         {
-            return CreateProductWrapper(offerConfig.Id);
+            return GetProductWrapper(offerConfig.Id);
         }
 
         private void OnPurchasingFailed(string id)

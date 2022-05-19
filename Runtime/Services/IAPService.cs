@@ -19,7 +19,12 @@ namespace LittleBit.Modules.IAppModule.Services
         private readonly ITransactionsRestorer _transactionsRestorer;
         private readonly IPurchaseHandler _purchaseHandler;
         private readonly List<OfferConfig> _offerConfigs;
+
         private Dictionary<string, ProductConfig> _allProducts;
+
+#if UNITY_EDITOR
+        private Dictionary<string, EditorProductWrapper> _editorProductWrappers;
+#endif
 
         public event Action<string> OnPurchasingSuccess;
         public event Action<string> OnPurchasingFailed;
@@ -55,17 +60,28 @@ namespace LittleBit.Modules.IAppModule.Services
         private void InitAllProducts()
         {
             _allProducts = new Dictionary<string, ProductConfig>();
+            _editorProductWrappers = new Dictionary<string, EditorProductWrapper>();
 
-            _offerConfigs.ForEach(AddProductToAllProducts);
-            _offerConfigs.SelectMany(o => o.Products).ToList().ForEach(AddProductToAllProducts);
+            _offerConfigs
+                .ForEach(AddProductToAllProducts);
+            
+            _offerConfigs
+                .SelectMany(o => o.Products)
+                .ToList()
+                .ForEach(AddProductToAllProducts);
+
+#if UNITY_EDITOR
+            _allProducts.Select(kvp => kvp.Key)
+                .ToList()
+                .ForEach(id => _editorProductWrappers.Add(id, CreateEditorProductWrapper(id)));
+#endif
         }
 
         private void AddProductToAllProducts(ProductConfig productConfig)
         {
-            
             var id = productConfig.Id;
-            
-            if(string.IsNullOrEmpty(id)) return;
+
+            if (string.IsNullOrEmpty(id)) return;
 
             if (_allProducts.ContainsKey(id)) return;
 
@@ -81,14 +97,17 @@ namespace LittleBit.Modules.IAppModule.Services
             _controller.InitiatePurchase(product);
         }
 
-        public IProductWrapper CreateProductWrapper(string id)
+        public IProductWrapper GetProductWrapper(string id)
         {
 #if UNITY_EDITOR
-            return new EditorProductWrapper(_allProducts[id], this);
+            return !_editorProductWrappers.ContainsKey(id) ? null : _editorProductWrappers[id];
 #else
             return new RuntimeProductWrapper(_controller.products.WithID(id));
 #endif
         }
+
+        private EditorProductWrapper CreateEditorProductWrapper(string id) =>
+            new EditorProductWrapper(_allProducts[id]);
 
         public void RestorePurchasedProducts(Action<bool> callback)
         {
@@ -102,7 +121,12 @@ namespace LittleBit.Modules.IAppModule.Services
                 var id = purchaseEvent.purchasedProduct.definition.id;
 
                 if (success)
+                {
+#if UNITY_EDITOR
+                    (GetProductWrapper(id) as EditorProductWrapper)!.Purchase();
+#endif
                     OnPurchasingSuccess?.Invoke(id);
+                }
                 else
                     OnPurchasingFailed?.Invoke(id);
 

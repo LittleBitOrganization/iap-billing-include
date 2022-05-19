@@ -9,6 +9,6 @@ namespace LittleBit.Modules.IAppModule.Services
         public event Action<string> OnPurchasingFailed;
         public void Purchase(string id);
         public void RestorePurchasedProducts(Action<bool> callback);
-        public IProductWrapper CreateProductWrapper(string id);
+        public IProductWrapper GetProductWrapper(string id);
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine.Purchasing;
 
 namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
 {
-    public partial class EditorProductWrapper : IProductWrapper, IDisposable
+    public partial class EditorProductWrapper : IProductWrapper
     {
         private readonly IIAPService _iapService;
 
@@ -23,25 +23,17 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
         private Func<string, string> GetPlayerPrefsKey =>
             (key) => Path.Combine(Constants.PlayerPrefsKeyPrefix, Id, key);
 
-        public EditorProductWrapper(ProductConfig productConfig, IIAPService iapService)
+        public EditorProductWrapper(ProductConfig productConfig)
         {
             Type = productConfig.ProductType;
             Id = productConfig.Id;
             LocalizedPrice = DefaultPrice;
-
-            _iapService = iapService;
-            _iapService.OnPurchasingSuccess += OnPurchasingSuccess;
         }
-
-        private void OnPurchasingSuccess(string id)
+        
+        public void Purchase()
         {
-            if (id.Equals(Id)) PlayerPrefs.SetInt(GetPlayerPrefsKey(Constants.IsPurchasedKey), Constants.True);
+            PlayerPrefs.SetInt(GetPlayerPrefsKey(Constants.IsPurchasedKey), Constants.True);
         }
-
-
-        public void Dispose()
-        {
-            _iapService.OnPurchasingSuccess -= OnPurchasingSuccess;
-        }
+        
     }
 }
