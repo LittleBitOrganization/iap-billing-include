@@ -62,7 +62,10 @@ namespace LittleBit.Modules.IAppModule.Services
 
         private void AddProductToAllProducts(ProductConfig productConfig)
         {
+            
             var id = productConfig.Id;
+            
+            if(string.IsNullOrEmpty(id)) return;
 
             if (_allProducts.ContainsKey(id)) return;
 
