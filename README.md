@@ -115,7 +115,7 @@ public override void InstallBindings()
             RuntimePlatform.IPhonePlayer => new AppleTransactionsRestorer(),
             _ => new DebugTransactionsRestorer()
         };
-    }
+   
 
 ```
 ## Использование
