@@ -2,7 +2,7 @@
 
 namespace LittleBit.Modules.IAppModule.Layouts
 {
-    [Serializable]
+    [Serializable, Obsolete]
     public class IPurchaseInterfaceContainer : IUnifiedContainer<IPurchaseLayout>
     {
         
