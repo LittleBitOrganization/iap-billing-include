@@ -56,8 +56,17 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             _allProducts = new Dictionary<string, ProductConfig>();
 
-            _offerConfigs.ForEach(o => _allProducts.Add(o.Id, o));
-            _offerConfigs.SelectMany(o => o.Products).ToList().ForEach(p => _allProducts.Add(p.Id, p));
+            _offerConfigs.ForEach(AddProductToAllProducts);
+            _offerConfigs.SelectMany(o => o.Products).ToList().ForEach(AddProductToAllProducts);
+        }
+
+        private void AddProductToAllProducts(ProductConfig productConfig)
+        {
+            var id = productConfig.Id;
+
+            if (_allProducts.ContainsKey(id)) return;
+
+            _allProducts.Add(id, productConfig);
         }
 
         public void Purchase(string id)
