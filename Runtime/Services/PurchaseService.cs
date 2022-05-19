@@ -35,6 +35,16 @@ namespace LittleBit.Modules.IAppModule.Services
             _iapService.Purchase(offer.Id);
         }
 
+        public ProductWrapper CreateProductWrapper(string id)
+        {
+            return _iapService.CreateProductWrapper(id);
+        }
+        
+        public ProductWrapper CreateProductWrapper(OfferConfig offerConfig)
+        {
+            return CreateProductWrapper(offerConfig.Id);
+        }
+
         private void OnPurchasingFailed()
         {
             _callback?.Invoke(false);
