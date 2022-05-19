@@ -1,5 +1,6 @@
 ﻿using System;
 using LittleBit.Modules.IAppModule.Commands.Factory;
+using LittleBit.Modules.IAppModule.Data.ProductWrappers;
 using LittleBit.Modules.IAppModule.Data.Purchases;
 
 namespace LittleBit.Modules.IAppModule.Services
@@ -26,7 +27,7 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             if (_isPurchasing) return;
 
-            if (!_iapService.CreateProductWrapper(offer.Id).CanBuy()) return;
+            if (!_iapService.CreateProductWrapper(offer.Id).CanPurchase) return;
             
             _isPurchasing = true;
             _callback = callback;
@@ -35,17 +36,17 @@ namespace LittleBit.Modules.IAppModule.Services
             _iapService.Purchase(offer.Id);
         }
 
-        public ProductWrapper CreateProductWrapper(string id)
+        public IProductWrapper CreateProductWrapper(string id)
         {
             return _iapService.CreateProductWrapper(id);
         }
         
-        public ProductWrapper CreateProductWrapper(OfferConfig offerConfig)
+        public IProductWrapper CreateProductWrapper(OfferConfig offerConfig)
         {
             return CreateProductWrapper(offerConfig.Id);
         }
 
-        private void OnPurchasingFailed()
+        private void OnPurchasingFailed(string id)
         {
             _callback?.Invoke(false);
             _callback = null;
@@ -53,7 +54,7 @@ namespace LittleBit.Modules.IAppModule.Services
             _isPurchasing = false;
         }
 
-        private void OnPurchasingSuccess()
+        private void OnPurchasingSuccess(string id)
         {
             _currentOffer.HandlePurchase(_purchaseCommandFactory);
 

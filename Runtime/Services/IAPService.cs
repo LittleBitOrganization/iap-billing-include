@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using LittleBit.Modules.IAppModule.Data.Products;
+using LittleBit.Modules.IAppModule.Data.ProductWrappers;
 using LittleBit.Modules.IAppModule.Data.Purchases;
 using LittleBit.Modules.IAppModule.Services.PurchaseProcessors;
 using LittleBit.Modules.IAppModule.Services.TransactionsRestorers;
@@ -12,13 +15,14 @@ namespace LittleBit.Modules.IAppModule.Services
     {
         private IStoreController _controller;
         private IExtensionProvider _extensionProvider;
-        
+
         private readonly ITransactionsRestorer _transactionsRestorer;
         private readonly IPurchaseHandler _purchaseHandler;
         private readonly List<OfferConfig> _offerConfigs;
+        private Dictionary<string, ProductConfig> _allProducts;
 
-        public event Action OnPurchasingSuccess;
-        public event Action OnPurchasingFailed;
+        public event Action<string> OnPurchasingSuccess;
+        public event Action<string> OnPurchasingFailed;
 
         public IAPService(ITransactionsRestorer transactionsRestorer,
             IPurchaseHandler purchaseHandler, List<OfferConfig> offerConfigs)
@@ -42,7 +46,18 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             _offerConfigs.ForEach(offer => builder.AddProduct(offer.Id, offer.ProductType));
+
+            InitAllProducts();
+
             return builder;
+        }
+
+        private void InitAllProducts()
+        {
+            _allProducts = new Dictionary<string, ProductConfig>();
+
+            _offerConfigs.ForEach(o => _allProducts.Add(o.Id, o));
+            _offerConfigs.SelectMany(o => o.Products).ToList().ForEach(p => _allProducts.Add(p.Id, p));
         }
 
         public void Purchase(string id)
@@ -54,9 +69,13 @@ namespace LittleBit.Modules.IAppModule.Services
             _controller.InitiatePurchase(product);
         }
 
-        public ProductWrapper CreateProductWrapper(string id)
+        public IProductWrapper CreateProductWrapper(string id)
         {
-            return new ProductWrapper(_controller.products.WithID(id));
+#if UNITY_EDITOR
+            return new EditorProductWrapper(_allProducts[id], this);
+#else
+            return new RuntimeProductWrapper(_controller.products.WithID(id));
+#endif
         }
 
         public void RestorePurchasedProducts(Action<bool> callback)
@@ -68,9 +87,13 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             var result = _purchaseHandler.ProcessPurchase(purchaseEvent, (success) =>
             {
-                if (success) OnPurchasingSuccess?.Invoke();
-                else OnPurchasingFailed?.Invoke();
-                
+                var id = purchaseEvent.purchasedProduct.definition.id;
+
+                if (success)
+                    OnPurchasingSuccess?.Invoke(id);
+                else
+                    OnPurchasingFailed?.Invoke(id);
+
                 Debug.LogError("Processing result: " + success);
             });
 
@@ -84,7 +107,7 @@ namespace LittleBit.Modules.IAppModule.Services
 
         public void OnPurchaseFailed(Product product, PurchaseFailureReason failureReason)
         {
-            OnPurchasingFailed?.Invoke();
+            OnPurchasingFailed?.Invoke(product.definition.id);
             Debug.LogError("PURCHASE FAILED!");
         }
     }
