@@ -7,7 +7,7 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
             public const string PlayerPrefsKeyPrefix = "EditorProductWrapper";
             public const string IsPurchasedKey = "EditorProductWrapper";
             public const int True = 1;
-            public const int False = 1;
+            public const int False = 0;
 
         }
     }
