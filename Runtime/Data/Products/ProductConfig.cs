@@ -9,8 +9,13 @@ namespace LittleBit.Modules.IAppModule.Data.Products
         [SerializeField] private ProductType productType = ProductType.Consumable;
 
         [SerializeField] private string id;
-        
-        public string Id { get; protected set; }
+
+        public string Id
+        {
+            get => id;
+            protected set => id = value;
+        }
+
         public ProductType ProductType => productType;
 
         public abstract void HandlePurchase(PurchaseCommandFactory purchaseCommandFactory);
