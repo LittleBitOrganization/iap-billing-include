@@ -12,9 +12,15 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
         private readonly IIAPService _iapService;
 
         private const decimal DefaultPrice = 1;
+        private const string DefaultName = "Sample Product";
+        private const string DefaultDescription = "Sample Product Description";
+
         public ProductType Type { get; }
         public string Id { get; }
-        public decimal LocalizedPrice { get; }
+        public decimal LocalizedPrice => DefaultPrice;
+        public string LocalizedTitle => DefaultName;
+        public string LocalizedDescription => DefaultDescription;
+        public string LocalizedPriceString => $@"{DefaultPrice}$";
         public bool CanPurchase => Type == ProductType.Consumable || !IsPurchased;
 
         public bool IsPurchased => PlayerPrefs.GetInt(GetPlayerPrefsKey(Constants.IsPurchasedKey), Constants.False) ==
@@ -27,7 +33,6 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
         {
             Type = productConfig.ProductType;
             Id = productConfig.Id;
-            LocalizedPrice = DefaultPrice;
         }
         
         public void Purchase()
