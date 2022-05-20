@@ -11,5 +11,7 @@ namespace LittleBit.Modules.IAppModule.Layouts
         void SetData(OfferConfig offerConfig);
 
         void SetButtonInteractable(bool interactable);
+
+        void SetPrice(string price);
     }
 }
