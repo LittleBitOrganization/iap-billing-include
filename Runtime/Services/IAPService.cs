@@ -60,11 +60,13 @@ namespace LittleBit.Modules.IAppModule.Services
         private void InitAllProducts()
         {
             _allProducts = new Dictionary<string, ProductConfig>();
+            
+#if UNITY_EDITOR
             _editorProductWrappers = new Dictionary<string, EditorProductWrapper>();
-
+#endif
             _offerConfigs
                 .ForEach(AddProductToAllProducts);
-            
+
             _offerConfigs
                 .SelectMany(o => o.Products)
                 .ToList()
