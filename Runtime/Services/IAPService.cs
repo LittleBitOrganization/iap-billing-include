@@ -60,7 +60,7 @@ namespace LittleBit.Modules.IAppModule.Services
         private void InitAllProducts()
         {
             _allProducts = new Dictionary<string, ProductConfig>();
-            
+
 #if UNITY_EDITOR
             _editorProductWrappers = new Dictionary<string, EditorProductWrapper>();
 #endif
@@ -102,11 +102,25 @@ namespace LittleBit.Modules.IAppModule.Services
         public IProductWrapper GetProductWrapper(string id)
         {
 #if UNITY_EDITOR
-            return !_editorProductWrappers.ContainsKey(id) ? null : _editorProductWrappers[id];
+            return GetEditorProductWrapper(id);
 #else
-            return new RuntimeProductWrapper(_controller.products.WithID(id));
+            try
+            {
+                return GetRuntimeProductWrapper(id);
+            }
+            catch
+            {
+                Debug.LogError($"Can't create runtime product wrapper with id:{id}");
+                return GetEditorProductWrapper(id);
+            }
 #endif
         }
+
+        private RuntimeProductWrapper GetRuntimeProductWrapper(string id) =>
+            new RuntimeProductWrapper(_controller.products.WithID(id));
+
+        private EditorProductWrapper GetEditorProductWrapper(string id) =>
+            !_editorProductWrappers.ContainsKey(id) ? null : _editorProductWrappers[id];
 
         private EditorProductWrapper CreateEditorProductWrapper(string id) =>
             new EditorProductWrapper(_allProducts[id]);
