@@ -28,6 +28,7 @@ namespace LittleBit.Modules.IAppModule.Services
 
         public event Action<string> OnPurchasingSuccess;
         public event Action<string> OnPurchasingFailed;
+        public event Action OnInitializationComplete;
 
         public IAPService(ITransactionsRestorer transactionsRestorer,
             IPurchaseHandler purchaseHandler, List<OfferConfig> offerConfigs)
@@ -45,6 +46,8 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             _extensionProvider = extensions;
             _controller = controller;
+            
+            OnInitializationComplete?.Invoke();
         }
 
         private ConfigurationBuilder InitBuilder()

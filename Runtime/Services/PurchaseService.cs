@@ -7,12 +7,18 @@ namespace LittleBit.Modules.IAppModule.Services
 {
     public class PurchaseService : IService
     {
+        public event Action OnIAPServiceInitialized;
+
         private readonly IIAPService _iapService;
+
+        private readonly PurchaseCommandFactory _purchaseCommandFactory;
+
         private OfferConfig _currentOffer;
 
-        private bool _isPurchasing;
         private Action<bool> _callback;
-        private PurchaseCommandFactory _purchaseCommandFactory;
+
+        private bool _isPurchasing;
+
 
         public PurchaseService(IIAPService iapService, PurchaseCommandFactory purchaseCommandFactory)
         {
@@ -21,6 +27,7 @@ namespace LittleBit.Modules.IAppModule.Services
 
             _iapService.OnPurchasingSuccess += OnPurchasingSuccess;
             _iapService.OnPurchasingFailed += OnPurchasingFailed;
+            _iapService.OnInitializationComplete += () => OnIAPServiceInitialized?.Invoke();
         }
 
         public void Purchase(OfferConfig offer, Action<bool> callback)
@@ -28,7 +35,7 @@ namespace LittleBit.Modules.IAppModule.Services
             if (_isPurchasing) return;
 
             if (!_iapService.GetProductWrapper(offer.Id).CanPurchase) return;
-            
+
             _isPurchasing = true;
             _callback = callback;
             _currentOffer = offer;
@@ -40,7 +47,7 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             return _iapService.GetProductWrapper(id);
         }
-        
+
         public IProductWrapper GetProductWrapper(OfferConfig offerConfig)
         {
             return GetProductWrapper(offerConfig.Id);

@@ -7,6 +7,7 @@ namespace LittleBit.Modules.IAppModule.Services
     {
         public event Action<string> OnPurchasingSuccess;
         public event Action<string> OnPurchasingFailed;
+        public event Action OnInitializationComplete;
         public void Purchase(string id);
         public void RestorePurchasedProducts(Action<bool> callback);
         public IProductWrapper GetProductWrapper(string id);
