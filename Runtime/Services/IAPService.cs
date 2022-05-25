@@ -22,10 +22,7 @@ namespace LittleBit.Modules.IAppModule.Services
 
         private Dictionary<string, ProductConfig> _allProducts;
 
-#if UNITY_EDITOR
         private Dictionary<string, EditorProductWrapper> _editorProductWrappers;
-#endif
-
         public event Action<string> OnPurchasingSuccess;
         public event Action<string> OnPurchasingFailed;
         public event Action OnInitializationComplete;
@@ -38,6 +35,8 @@ namespace LittleBit.Modules.IAppModule.Services
             _transactionsRestorer = transactionsRestorer;
 
             var builder = InitBuilder();
+
+            InitAllProducts();
 
             UnityPurchasing.Initialize(this, builder);
         }
@@ -55,8 +54,6 @@ namespace LittleBit.Modules.IAppModule.Services
             var builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
             _offerConfigs.ForEach(offer => builder.AddProduct(offer.Id, offer.ProductType));
 
-            InitAllProducts();
-
             return builder;
         }
 
@@ -64,9 +61,8 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             _allProducts = new Dictionary<string, ProductConfig>();
 
-#if UNITY_EDITOR
             _editorProductWrappers = new Dictionary<string, EditorProductWrapper>();
-#endif
+
             _offerConfigs
                 .ForEach(AddProductToAllProducts);
 
@@ -75,10 +71,13 @@ namespace LittleBit.Modules.IAppModule.Services
                 .ToList()
                 .ForEach(AddProductToAllProducts);
 
-#if UNITY_EDITOR
+
             _allProducts.Select(kvp => kvp.Key)
                 .ToList()
                 .ForEach(id => _editorProductWrappers.Add(id, CreateEditorProductWrapper(id)));
+
+#if IAP_DEBUG
+            OnInitializationComplete?.Invoke();
 #endif
         }
 
@@ -104,8 +103,8 @@ namespace LittleBit.Modules.IAppModule.Services
 
         public IProductWrapper GetProductWrapper(string id)
         {
-#if UNITY_EDITOR
-            return GetEditorProductWrapper(id);
+#if IAP_DEBUG
+            return GetDebugProductWrapper(id);
 #else
             try
             {
@@ -114,7 +113,7 @@ namespace LittleBit.Modules.IAppModule.Services
             catch
             {
                 Debug.LogError($"Can't create runtime product wrapper with id:{id}");
-                return GetEditorProductWrapper(id);
+                return GetDebugProductWrapper(id);
             }
 #endif
         }
@@ -122,7 +121,7 @@ namespace LittleBit.Modules.IAppModule.Services
         private RuntimeProductWrapper GetRuntimeProductWrapper(string id) =>
             new RuntimeProductWrapper(_controller.products.WithID(id));
 
-        private EditorProductWrapper GetEditorProductWrapper(string id) =>
+        private EditorProductWrapper GetDebugProductWrapper(string id) =>
             !_editorProductWrappers.ContainsKey(id) ? null : _editorProductWrappers[id];
 
         private EditorProductWrapper CreateEditorProductWrapper(string id) =>
@@ -141,7 +140,7 @@ namespace LittleBit.Modules.IAppModule.Services
 
                 if (success)
                 {
-#if UNITY_EDITOR
+#if IAP_DEBUG
                     (GetProductWrapper(id) as EditorProductWrapper)!.Purchase();
 #endif
                     OnPurchasingSuccess?.Invoke(id);
