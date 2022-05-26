@@ -99,6 +99,7 @@ namespace LittleBit.Modules.IAppModule.Services
             if (product is {availableToPurchase: false}) return;
 
 #if IAP_DEBUG
+            (GetProductWrapper(id) as EditorProductWrapper)!.Purchase();
             OnPurchasingSuccess?.Invoke(id);
 #else
             _controller.InitiatePurchase(product);
