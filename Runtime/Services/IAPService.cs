@@ -76,7 +76,7 @@ namespace LittleBit.Modules.IAppModule.Services
                 .ToList()
                 .ForEach(id => _editorProductWrappers.Add(id, CreateEditorProductWrapper(id)));
 
-#if IAP_DEBUG
+#if IAP_DEBUG || UNITY_EDITOR
             OnInitializationComplete?.Invoke();
 #endif
         }
@@ -98,7 +98,7 @@ namespace LittleBit.Modules.IAppModule.Services
 
             if (product is {availableToPurchase: false}) return;
 
-#if IAP_DEBUG
+#if IAP_DEBUG || UNITY_EDITOR
             (GetProductWrapper(id) as EditorProductWrapper)!.Purchase();
             OnPurchasingSuccess?.Invoke(id);
 #else
@@ -108,7 +108,7 @@ namespace LittleBit.Modules.IAppModule.Services
 
         public IProductWrapper GetProductWrapper(string id)
         {
-#if IAP_DEBUG
+#if IAP_DEBUG || UNITY_EDITOR
             return GetDebugProductWrapper(id);
 #else
             try
@@ -145,7 +145,7 @@ namespace LittleBit.Modules.IAppModule.Services
 
                 if (success)
                 {
-#if IAP_DEBUG
+#if IAP_DEBUG || UNITY_EDITOR
                     (GetProductWrapper(id) as EditorProductWrapper)!.Purchase();
 #endif
                     OnPurchasingSuccess?.Invoke(id);
