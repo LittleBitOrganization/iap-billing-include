@@ -45,7 +45,7 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             _extensionProvider = extensions;
             _controller = controller;
-            
+
             OnInitializationComplete?.Invoke();
         }
 
@@ -98,7 +98,11 @@ namespace LittleBit.Modules.IAppModule.Services
 
             if (product is {availableToPurchase: false}) return;
 
+#if IAP_DEBUG
+            OnPurchasingSuccess?.Invoke(id);
+#else
             _controller.InitiatePurchase(product);
+#endif
         }
 
         public IProductWrapper GetProductWrapper(string id)
