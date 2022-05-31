@@ -27,7 +27,6 @@
   * [IOfferLayout](#iofferlayout)
 - [Продвинутое использование](#продвинутое-использование)
   * [Кастомные магазины](#кастомные-магазины)
-  * [Пайплайн обработки покупок](#пайплайн-обработки-покупок)
 - [Устаревшее](#устаревшее)
   * [IPurchaseLayout](#ipurchaselayout)
 
@@ -180,15 +179,15 @@ void Purchase(OfferConfig offerConfig, Action<bool> callback);
 
 ```c#
 
-        event Action OnPurchasingSuccess;
+event Action OnPurchasingSuccess;
 
-        event Action OnPurchasingFailed;
+event Action OnPurchasingFailed;
 
-        void Purchase(string id);
+void Purchase(string id);
 
-        void RestorePurchasedProducts(Action<bool> callback);
+void RestorePurchasedProducts(Action<bool> callback);
 
-        IProductWrapper GetProductWrapper(string id);
+IProductWrapper GetProductWrapper(string id);
 
 ```
 Вы можете работать с ним напрямую, однако лучше написать свою обертку или использовать готовую - [PurchaseService](#purchaseservice).
@@ -203,14 +202,14 @@ OfferConfig также может иметь ссылку на [IOfferLayout](#i
 
 Структура:
 
-```swift
-id:string -> id оффера (покупки)
+```c#
+string id; -> id оффера (покупки)
 
-productType:ProductType -> тип покупки (Consumable, NonConsumable, Subscription)
+ProductType productType; -> тип покупки (Consumable, NonConsumable, Subscription)
 
-layout:IPurchaseInterfaceContainer -> ссылка на UI view
+IPurchaseInterfaceContainer layout; -> ссылка на UI view
 
-products:IReadOnlyList<ProductConfig> -> список покупаемых продуктов
+IReadOnlyList<ProductConfig> products; -> список покупаемых продуктов
 ```
 
 Важно! id должен быть написан в lower case стиле, единственный допустимый сепаратор - <b> нижнее подчеркивание </b>. Для проверки id на соответствие нажмите кнопку <b> Validate </b>. ID должен соответствовать ID соответствующего продукта в магазине. 
@@ -316,11 +315,15 @@ CanPurchase - можно ли купить продукт (значение во
 
 Пайплайн обработки покупок в режиме релиза следующий:
 
+```
 [PurchaseService](#purchaseservice).Purchase() -> [IAPService](#iapservice).Purchase() -> UnityIAP -> ... -> UnityIAP -> PurchaseComplete!
+```
 
 В режиме тестирования:
 
+```
 [PurchaseService](#purchaseservice).Purchase() -> [IAPService](#iapservice).Purchase() -> FakePurchase -> PurchaseComplete!
+```
 
 ## Вспомогательные классы
 
@@ -332,21 +335,20 @@ CanPurchase - можно ли купить продукт (значение во
 
 Содержит единственное поле - List<[OffersGroupConfig](#offergroupconfig)> groups
 
-
 ### OfferGroupConfig
 
 Конфиг, помогающий объединить по смыслу группу офферов. Например, группа ресусров, группа паков с NPC. [StoreConfig](#storeconfig) содержит в себе группы офферов. 
 
 Структура:
 
-```swift
-titie:string -> название группы
+```c#
+string titie -> название группы
 
-description:string -> описание группы
+string description -> описание группы
 
-icon:sprite -> иконка группы
+Sprite icon -> иконка группы
 
-offers:IReadOnlyList<OfferConfig> -> офферы, находящиеся в данной группе
+IReadOnlyList<OfferConfig> offers -> офферы, находящиеся в данной группе
 
 ```
 
@@ -357,11 +359,11 @@ offers:IReadOnlyList<OfferConfig> -> офферы, находящиеся в д�
 Структура:
 
 ```c#
-        event Action OnClickBuy -> следует вызывать при нажатии на кнопку покупки
+event Action OnClickBuy -> следует вызывать при нажатии на кнопку покупки
 
-        void SetData(OfferConfig) -> установка данных об оффере
+void SetData(OfferConfig) -> установка данных об оффере
 
-        void SetButtonInteractable(bool) -> метод для изменения состояния интерактивности кнопки
+void SetButtonInteractable(bool) -> метод для изменения состояния интерактивности кнопки
 ```
 
 Пример использования. В проекте GardenEvolution отрисовка паков с садовниками в магазине происходит следующим образом:
