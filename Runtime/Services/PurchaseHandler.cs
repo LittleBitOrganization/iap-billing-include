@@ -47,18 +47,18 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             if (ProductIsNull(id) || OfferIsNull())
             {
-                StopPurchasing(null);
+                CompletePurchase(null);
                 return;
             }
-
-            StopPurchasing(() => { _callback?.Invoke(true); });
-
+            
             _currentOffer.HandlePurchase(_purchaseCommandFactory);
+            
+            CompletePurchase(() => { _callback?.Invoke(true); });
         }
 
-        private void OnPurchasingFailed(string id) => StopPurchasing(() => { _callback?.Invoke(false); });
+        private void OnPurchasingFailed(string id) => CompletePurchase(() => { _callback?.Invoke(false); });
 
-        private void StopPurchasing(Action callback)
+        private void CompletePurchase(Action callback)
         {
             callback?.Invoke();
 
