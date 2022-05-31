@@ -7,68 +7,37 @@ namespace LittleBit.Modules.IAppModule.Services
 {
     public class PurchaseService : IService
     {
-        public event Action OnIAPServiceInitialized;
+        public event Action OnInitialized;
+        public bool IsInitialized { get; private set; }
+
+        private readonly PurchaseHandler _purchaseHandler;
 
         private readonly IIAPService _iapService;
 
-        private readonly PurchaseCommandFactory _purchaseCommandFactory;
-
-        private OfferConfig _currentOffer;
-
-        private Action<bool> _callback;
-
-        private bool _isPurchasing;
-
-
         public PurchaseService(IIAPService iapService, PurchaseCommandFactory purchaseCommandFactory)
         {
-            _purchaseCommandFactory = purchaseCommandFactory;
             _iapService = iapService;
+            _purchaseHandler = new PurchaseHandler(this, iapService, purchaseCommandFactory);
 
-            _iapService.OnPurchasingSuccess += OnPurchasingSuccess;
-            _iapService.OnPurchasingFailed += OnPurchasingFailed;
-            _iapService.OnInitializationComplete += () => OnIAPServiceInitialized?.Invoke();
+            Subscribe();
         }
 
-        public void Purchase(OfferConfig offer, Action<bool> callback)
+        public void Purchase(OfferConfig offer, Action<bool> callback) => _purchaseHandler.Purchase(offer, callback);
+
+        public IProductWrapper GetProductWrapper(string id) => _iapService.GetProductWrapper(id);
+
+        public IProductWrapper GetProductWrapper(OfferConfig offerConfig) => GetProductWrapper(offerConfig.Id);
+
+        private void Subscribe()
         {
-            if (_isPurchasing) return;
-
-            if (!_iapService.GetProductWrapper(offer.Id).CanPurchase) return;
-
-            _isPurchasing = true;
-            _callback = callback;
-            _currentOffer = offer;
-
-            _iapService.Purchase(offer.Id);
+            _iapService.OnInitializationComplete += OnInitializationComplete;
         }
 
-        public IProductWrapper GetProductWrapper(string id)
+        private void OnInitializationComplete()
         {
-            return _iapService.GetProductWrapper(id);
-        }
+            IsInitialized = true;
 
-        public IProductWrapper GetProductWrapper(OfferConfig offerConfig)
-        {
-            return GetProductWrapper(offerConfig.Id);
-        }
-
-        private void OnPurchasingFailed(string id)
-        {
-            _callback?.Invoke(false);
-            _callback = null;
-
-            _isPurchasing = false;
-        }
-
-        private void OnPurchasingSuccess(string id)
-        {
-            _currentOffer.HandlePurchase(_purchaseCommandFactory);
-
-            _callback?.Invoke(true);
-            _callback = null;
-
-            _isPurchasing = false;
+            OnInitialized?.Invoke();
         }
     }
 }

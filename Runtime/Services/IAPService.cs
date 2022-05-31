@@ -118,7 +118,7 @@ namespace LittleBit.Modules.IAppModule.Services
             catch
             {
                 Debug.LogError($"Can't create runtime product wrapper with id:{id}");
-                return GetDebugProductWrapper(id);
+                return null;
             }
 #endif
         }
