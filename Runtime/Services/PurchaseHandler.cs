@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using LittleBit.Modules.IAppModule.Commands.Factory;
 using LittleBit.Modules.IAppModule.Data.Purchases;
 
@@ -9,14 +11,15 @@ namespace LittleBit.Modules.IAppModule.Services
         private readonly IIAPService _iapService;
         private readonly PurchaseCommandFactory _purchaseCommandFactory;
         private readonly PurchaseService _purchaseService;
+        private readonly List<OfferConfig> _offers;
 
-        private OfferConfig _currentOffer;
         private Action<bool> _callback;
         private bool _isPurchasing;
 
         public PurchaseHandler(PurchaseService purchaseService, IIAPService iapService,
-            PurchaseCommandFactory purchaseCommandFactory)
+            PurchaseCommandFactory purchaseCommandFactory, List<OfferConfig> offers)
         {
+            _offers = offers;
             _purchaseService = purchaseService;
             _iapService = iapService;
             _purchaseCommandFactory = purchaseCommandFactory;
@@ -30,33 +33,32 @@ namespace LittleBit.Modules.IAppModule.Services
             _iapService.OnPurchasingFailed += OnPurchasingFailed;
         }
 
-        public void Purchase(OfferConfig offer, Action<bool> callback)
+        public void Purchase(OfferConfig offer, Action<bool> callback) => Purchase(offer.Id, callback);
+
+        public void Purchase(string id, Action<bool> callback)
         {
             if (!_purchaseService.IsInitialized) return;
-            
+
             if (_isPurchasing) return;
 
-            if (!_iapService.GetProductWrapper(offer.Id).CanPurchase) return;
+            if (!_iapService.GetProductWrapper(id).CanPurchase) return;
 
             _isPurchasing = true;
             _callback = callback;
-            _currentOffer = offer;
 
-            _iapService.Purchase(offer.Id);
+            _iapService.Purchase(id);
         }
 
         private void OnPurchasingSuccess(string id)
         {
             if (!_purchaseService.IsInitialized) return;
-            
-            if (ProductIsNull(id) || OfferIsNull())
-            {
-                CompletePurchase(null);
-                return;
-            }
-            
-            _currentOffer.HandlePurchase(_purchaseCommandFactory);
-            
+
+            var offer = _offers.FirstOrDefault(x => x.Id == id);
+
+            if (offer == null) return;
+
+            offer.HandlePurchase(_purchaseCommandFactory);
+
             CompletePurchase(() => { _callback?.Invoke(true); });
         }
 
@@ -66,13 +68,8 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             callback?.Invoke();
 
-            _currentOffer = null;
             _callback = null;
             _isPurchasing = false;
         }
-
-        private bool ProductIsNull(string id) => _purchaseService.GetProductWrapper(id).Equals(null);
-
-        private bool OfferIsNull() => _currentOffer.Equals(null);
     }
 }

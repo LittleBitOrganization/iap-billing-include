@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LittleBit.Modules.IAppModule.Commands.Factory;
 using LittleBit.Modules.IAppModule.Data.ProductWrappers;
 using LittleBit.Modules.IAppModule.Data.Purchases;
@@ -14,10 +15,12 @@ namespace LittleBit.Modules.IAppModule.Services
 
         private readonly IIAPService _iapService;
 
-        public PurchaseService(IIAPService iapService, PurchaseCommandFactory purchaseCommandFactory)
+        public PurchaseService(IIAPService iapService,
+            PurchaseCommandFactory purchaseCommandFactory,
+            List<OfferConfig> offerConfigs)
         {
             _iapService = iapService;
-            _purchaseHandler = new PurchaseHandler(this, iapService, purchaseCommandFactory);
+            _purchaseHandler = new PurchaseHandler(this, iapService, purchaseCommandFactory, offerConfigs);
 
             Subscribe();
         }
