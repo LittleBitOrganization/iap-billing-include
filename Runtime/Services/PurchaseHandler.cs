@@ -32,6 +32,8 @@ namespace LittleBit.Modules.IAppModule.Services
 
         public void Purchase(OfferConfig offer, Action<bool> callback)
         {
+            if (!_purchaseService.IsInitialized) return;
+            
             if (_isPurchasing) return;
 
             if (!_iapService.GetProductWrapper(offer.Id).CanPurchase) return;
@@ -45,6 +47,8 @@ namespace LittleBit.Modules.IAppModule.Services
 
         private void OnPurchasingSuccess(string id)
         {
+            if (!_purchaseService.IsInitialized) return;
+            
             if (ProductIsNull(id) || OfferIsNull())
             {
                 CompletePurchase(null);
