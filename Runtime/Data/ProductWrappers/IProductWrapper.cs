@@ -4,17 +4,10 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
 {
     public interface IProductWrapper
     {
-        public ProductType Type { get; }
-        public string Id { get; }
-        public decimal LocalizedPrice { get; }
+        public TransactionData TransactionData { get; }
         
-        public string LocalizedTitle{ get; }
+        public Metadata Metadata { get; }
+        public Definition Definition { get; }
         
-        public string LocalizedDescription{ get; }
-
-        public string LocalizedPriceString { get; }
-
-        public bool CanPurchase { get; }
-        public bool IsPurchased { get; }
     }
 }

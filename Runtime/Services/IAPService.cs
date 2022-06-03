@@ -22,7 +22,7 @@ namespace LittleBit.Modules.IAppModule.Services
         public event Action<string> OnPurchasingFailed;
         public event Action OnInitializationComplete;
 
-        private ProductCollections _productCollection;
+        private readonly ProductCollections _productCollection;
 
         public IAPService(ITransactionsRestorer transactionsRestorer,
             IPurchaseHandler purchaseHandler, List<OfferConfig> offerConfigs)

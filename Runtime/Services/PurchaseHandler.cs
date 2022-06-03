@@ -41,7 +41,7 @@ namespace LittleBit.Modules.IAppModule.Services
 
             if (_isPurchasing) return;
 
-            if (!_iapService.GetProductWrapper(id).CanPurchase) return;
+            if (!_iapService.GetProductWrapper(id).Metadata.CanPurchase) return;
 
             _isPurchasing = true;
             _callback = callback;

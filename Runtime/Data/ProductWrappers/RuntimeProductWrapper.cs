@@ -2,20 +2,34 @@
 
 namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
 {
-    public class RuntimeProductWrapper : IProductWrapper
+    public class RuntimeProductWrapper : ProductWrapper
     {
-        private readonly Product _product;
-        public RuntimeProductWrapper(Product product) => _product = product;
-        public ProductType Type => _product.definition.type;
-        public string Id => _product.definition.id;
-        public decimal LocalizedPrice => _product.metadata.localizedPrice;
-        public string LocalizedTitle => _product.metadata.localizedTitle;
-        public string LocalizedDescription => _product.metadata.localizedDescription;
-        public string LocalizedPriceString => _product.metadata.localizedPriceString;
-        public bool CanPurchase => _product.definition.type == ProductType.Consumable || !IsPurchased;
+        public RuntimeProductWrapper(Product product)
+        {
+            TransactionData = new()
+            {
+                HasReceiptGetter = () => product.hasReceipt,
+                ReceiptGetter = () => product.receipt,
+                TransactionIdGetter = () => product.transactionID
+            };
 
-        public bool IsPurchased => _product.hasReceipt ||
-                                   !string.IsNullOrEmpty(_product.receipt) ||
-                                   !string.IsNullOrEmpty(_product.transactionID);
+            Metadata = new()
+            {
+                LocalizedDescription = product.metadata.localizedDescription,
+                LocalizedPrice = product.metadata.localizedPrice,
+                LocalizedPriceString = product.metadata.localizedPriceString,
+                LocalizedTitle = product.metadata.localizedTitle,
+                CanPurchaseGetter = () => !Metadata.IsPurchasedGetter.Invoke(),
+                IsPurchasedGetter = () => TransactionData.HasReceipt ||
+                                         !string.IsNullOrEmpty(TransactionData.Receipt) ||
+                                         !string.IsNullOrEmpty(TransactionData.TransactionId)
+            };
+
+            Definition = new()
+            {
+                Id = product.definition.id,
+                Type = product.definition.type
+            };
+        }
     }
 }
