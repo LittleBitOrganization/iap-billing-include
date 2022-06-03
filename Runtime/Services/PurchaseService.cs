@@ -33,6 +33,12 @@ namespace LittleBit.Modules.IAppModule.Services
 
         private void Subscribe()
         {
+            if (_iapService.IsInitialized)
+            {
+                OnInitialized?.Invoke();
+                return;
+            }
+            
             _iapService.OnInitializationComplete += OnInitializationComplete;
         }
 

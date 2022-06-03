@@ -22,6 +22,8 @@ namespace LittleBit.Modules.IAppModule.Services
         public event Action<string> OnPurchasingFailed;
         public event Action OnInitializationComplete;
 
+        public bool IsInitialized { get; private set; }
+
         private readonly ProductCollections _productCollection;
 
         public IAPService(ITransactionsRestorer transactionsRestorer,
@@ -46,6 +48,7 @@ namespace LittleBit.Modules.IAppModule.Services
             _productCollection.AddUnityIAPProductCollection(controller.products);
 
             OnInitializationComplete?.Invoke();
+            IsInitialized = true;
         }
 
         private void Init()
@@ -62,6 +65,7 @@ namespace LittleBit.Modules.IAppModule.Services
 #if IAP_DEBUG || UNITY_EDITOR
 
             OnInitializationComplete?.Invoke();
+            IsInitialized = true;
 #endif
         }
 
