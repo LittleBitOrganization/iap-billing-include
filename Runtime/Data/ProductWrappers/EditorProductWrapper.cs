@@ -17,15 +17,17 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
         private const decimal DefaultPrice = 1;
         private const string DefaultTitle = "Sample Product";
         private const string DefaultDescription = "Sample Product Description";
-
-        public bool IsPurchased => PlayerPrefs.GetInt(GetPlayerPrefsKey(Constants.IsPurchasedKey), Constants.False) ==
-                                   Constants.True;
+        private const string DefaultCurrencyCode = "USD";
 
         private Func<string, string> GetPlayerPrefsKey =>
             (key) => Path.Combine(Constants.PlayerPrefsKeyPrefix, Definition.Id, key);
 
         public EditorProductWrapper(ProductConfig productConfig)
         {
+            bool IsPurchased() => PlayerPrefs.GetInt(GetPlayerPrefsKey(Constants.IsPurchasedKey), Constants.False)
+                .Equals(
+                    Constants.True);
+
             Definition = new()
             {
                 Id = productConfig.Id,
@@ -34,20 +36,20 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
 
             Metadata = new()
             {
+                CurrencyCode = DefaultCurrencyCode,
                 LocalizedDescription = DefaultDescription,
                 LocalizedTitle = DefaultTitle,
                 LocalizedPrice = DefaultPrice,
-                LocalizedPriceString = "USD" + DefaultPrice,
-                IsPurchasedGetter = () =>
-                    PlayerPrefs.GetInt(GetPlayerPrefsKey(Constants.IsPurchasedKey), Constants.False).Equals(Constants.True),
-                CanPurchaseGetter = () => Definition.Type.Equals(ProductType.Consumable) || !IsPurchased
+                LocalizedPriceString = DefaultCurrencyCode + DefaultPrice,
+                IsPurchasedGetter = IsPurchased,
+                CanPurchaseGetter = () => Definition.Type.Equals(ProductType.Consumable) || !Metadata.IsPurchased
             };
 
             TransactionData = new()
             {
-                TransactionIdGetter = () => IsPurchased ? GetRandomString(8) : String.Empty,
-                ReceiptGetter = () => IsPurchased ? "receipt_" + GetRandomString(6) : String.Empty,
-                HasReceiptGetter = () => IsPurchased
+                TransactionIdGetter = () => Metadata.IsPurchased ? GetRandomString(8) : String.Empty,
+                ReceiptGetter = () => Metadata.IsPurchased ? "receipt_" + GetRandomString(6) : String.Empty,
+                HasReceiptGetter = () => Metadata.IsPurchased
             };
         }
 
