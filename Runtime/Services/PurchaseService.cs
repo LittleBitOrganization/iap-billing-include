@@ -35,7 +35,7 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             if (_iapService.IsInitialized)
             {
-                OnInitialized?.Invoke();
+                OnInitializationComplete();
                 return;
             }
             
