@@ -42,7 +42,7 @@
 
 ```json
  "dependencies": {
-    "com.littlebitgames.iapmodule": "https://github.com/LittleBitOrganization/evolution-engine-aip.git"
+    "com.littlebitgames.iapmodule": "https://github.com/LittleBitOrganization/evolution-engine-iap.git"
 }
 ```
 
