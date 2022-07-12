@@ -22,11 +22,6 @@ namespace LittleBit.Modules.IAppModule.Services.PurchaseProcessors
         {
             try
             {
-                var validator = new CrossPlatformValidator(_crossPlatformTangles.GetGoogleData(),
-                    _crossPlatformTangles.GetAppleData(), Application.identifier);
-
-                validator.Validate(args.purchasedProduct.receipt);
-
 #if UNITY_IOS
                 AdjustPurchase.VerifyPurchaseiOS(args.purchasedProduct.receipt,
                     args.purchasedProduct.transactionID,
@@ -45,9 +40,9 @@ namespace LittleBit.Modules.IAppModule.Services.PurchaseProcessors
 
                 return PurchaseProcessingResult.Complete;
             }
-            catch (IAPSecurityException ex)
+            catch (Exception e)
             {
-                Debug.LogError("Invalid receipt: " + ex);
+                Debug.LogError("Invalid receipt!");
 
                 callback?.Invoke(false);
 
