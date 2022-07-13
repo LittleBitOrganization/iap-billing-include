@@ -20,10 +20,12 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
                 LocalizedPrice = product.metadata.localizedPrice,
                 LocalizedPriceString = product.metadata.localizedPriceString,
                 LocalizedTitle = product.metadata.localizedTitle,
-                CanPurchaseGetter = () => !Metadata.IsPurchasedGetter.Invoke(),
+                CanPurchaseGetter = () =>
+                    Definition.Type.Equals(ProductType.Consumable) ||
+                    !Metadata.IsPurchasedGetter.Invoke(),
                 IsPurchasedGetter = () => TransactionData.HasReceipt ||
-                                         !string.IsNullOrEmpty(TransactionData.Receipt) ||
-                                         !string.IsNullOrEmpty(TransactionData.TransactionId)
+                                          !string.IsNullOrEmpty(TransactionData.Receipt) ||
+                                          !string.IsNullOrEmpty(TransactionData.TransactionId)
             };
 
             Definition = new()
