@@ -22,21 +22,12 @@ namespace LittleBit.Modules.IAppModule.Services.PurchaseProcessors
         {
             try
             {
-#if UNITY_IOS
-                AdjustPurchase.VerifyPurchaseiOS(args.purchasedProduct.receipt,
-                    args.purchasedProduct.transactionID,
-                    args.purchasedProduct.definition.storeSpecificId,
-                    delegate(ADJPVerificationInfo info) { VerificationInfoDelegate(info, callback); });
+                var validator =
+                    new CrossPlatformValidator(_crossPlatformTangles.GetGoogleData(), _crossPlatformTangles.GetAppleData(), Application.identifier);
 
-#endif
+                validator.Validate(args.purchasedProduct.receipt);
 
-#if UNITY_ANDROID
-                AdjustPurchase.VerifyPurchaseAndroid(
-                    args.purchasedProduct.definition.id,
-                    args.purchasedProduct.transactionID,
-                    "hello, world",
-                    delegate(ADJPVerificationInfo info) { VerificationInfoDelegate(info, callback); });
-#endif
+                callback?.Invoke(true);
 
                 return PurchaseProcessingResult.Complete;
             }
@@ -47,22 +38,6 @@ namespace LittleBit.Modules.IAppModule.Services.PurchaseProcessors
                 callback?.Invoke(false);
 
                 return PurchaseProcessingResult.Complete;
-            }
-        }
-
-        private void VerificationInfoDelegate(ADJPVerificationInfo verificationInfo, Action<bool> purchaseCallback)
-        {
-            switch (verificationInfo.VerificationState)
-            {
-                case null:
-                    purchaseCallback?.Invoke(false);
-                    return;
-                case ADJPVerificationState.ADJPVerificationStatePassed:
-                    purchaseCallback?.Invoke(true);
-                    return;
-                default:
-                    purchaseCallback?.Invoke(false);
-                    break;
             }
         }
     }
