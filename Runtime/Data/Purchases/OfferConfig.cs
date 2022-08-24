@@ -17,6 +17,8 @@ namespace LittleBit.Modules.IAppModule.Data.Purchases
         [SerializeField] private List<ProductConfig> products;
         [SerializeField] private IPurchaseInterfaceContainer layout;
         [SerializeField] private IOfferLayoutInterfaceContainer offerLayout;
+        
+        [field: SerializeField] public bool IsFree { get; private set; }
 
         public IReadOnlyList<ProductConfig> Products => products;
         
@@ -24,6 +26,7 @@ namespace LittleBit.Modules.IAppModule.Data.Purchases
         public IPurchaseInterfaceContainer Layout => layout;
         
         public IOfferLayoutInterfaceContainer OfferLayout => offerLayout;
+        
 
         public override void HandlePurchase(PurchaseCommandFactory purchaseCommandFactory) => products.ForEach(x => x.HandlePurchase(purchaseCommandFactory));
 

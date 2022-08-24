@@ -34,11 +34,8 @@ namespace LittleBit.Modules.IAppModule.Services
         }
 
         public void Purchase(OfferConfig offer, Action<bool> callback = null) 
-            => Purchase(offer.Id, callback, false);
-
-        public void FreePurchase(OfferConfig offerConfig, Action<bool> callback = null)
-            => Purchase(offerConfig.Id, null, true);
-
+            => Purchase(offer.Id, callback, offer.IsFree);
+        
         public void Purchase(string id, Action<bool> callback, bool freePurchase)
         {
             if (!_purchaseService.IsInitialized) return;
