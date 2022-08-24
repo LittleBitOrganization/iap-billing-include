@@ -69,7 +69,7 @@ namespace LittleBit.Modules.IAppModule.Services
 #endif
         }
 
-        public void Purchase(string id)
+        public void Purchase(string id, bool freePurchase)
         {
             var product = _controller.products.WithID(id);
 
@@ -79,6 +79,12 @@ namespace LittleBit.Modules.IAppModule.Services
             (GetProductWrapper(id) as EditorProductWrapper)!.Purchase();
             OnPurchasingSuccess?.Invoke(id);
 #else
+            if (freePurchase)
+            {
+                OnPurchasingSuccess?.Invoke(id);
+                return;
+            }
+
             _controller.InitiatePurchase(product);
 #endif
         }
