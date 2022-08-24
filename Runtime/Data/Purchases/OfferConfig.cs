@@ -25,10 +25,7 @@ namespace LittleBit.Modules.IAppModule.Data.Purchases
         
         public IOfferLayoutInterfaceContainer OfferLayout => offerLayout;
 
-        public override void HandlePurchase(PurchaseCommandFactory purchaseCommandFactory)
-        {
-            products.ForEach(x => x.HandlePurchase(purchaseCommandFactory));
-        }
+        public override void HandlePurchase(PurchaseCommandFactory purchaseCommandFactory) => products.ForEach(x => x.HandlePurchase(purchaseCommandFactory));
 
         [Button]
         private void ValidateId()

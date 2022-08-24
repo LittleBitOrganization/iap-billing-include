@@ -18,15 +18,14 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
         private const string DefaultTitle = "Sample Product";
         private const string DefaultDescription = "Sample Product Description";
         private const string DefaultCurrencyCode = "USD";
+        private const string DefaultCurrencySymbol = "$";
 
         private Func<string, string> GetPlayerPrefsKey =>
             (key) => Path.Combine(Constants.PlayerPrefsKeyPrefix, Definition.Id, key);
 
         public EditorProductWrapper(ProductConfig productConfig)
         {
-            bool IsPurchased() => PlayerPrefs.GetInt(GetPlayerPrefsKey(Constants.IsPurchasedKey), Constants.False)
-                .Equals(
-                    Constants.True);
+            bool IsPurchased() => PlayerPrefs.GetInt(GetPlayerPrefsKey(Constants.IsPurchasedKey), Constants.False).Equals(Constants.True);
 
             Definition = new()
             {
@@ -37,6 +36,7 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
             Metadata = new()
             {
                 CurrencyCode = DefaultCurrencyCode,
+                CurrencySymbol = DefaultCurrencySymbol,
                 LocalizedDescription = DefaultDescription,
                 LocalizedTitle = DefaultTitle,
                 LocalizedPrice = DefaultPrice,

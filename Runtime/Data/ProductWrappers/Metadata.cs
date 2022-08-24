@@ -13,6 +13,8 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
         public string LocalizedPriceString { get; internal set; }
         
         public string CurrencyCode { get; internal set; }
+        
+        public string CurrencySymbol { get; internal set; }
 
         public Func<bool> CanPurchaseGetter { get; internal set; }
         public Func<bool> IsPurchasedGetter { get; internal set; }

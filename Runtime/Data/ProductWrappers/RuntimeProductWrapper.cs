@@ -1,4 +1,5 @@
-﻿using UnityEngine.Purchasing;
+﻿using System.Globalization;
+using UnityEngine.Purchasing;
 
 namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
 {
@@ -16,6 +17,7 @@ namespace LittleBit.Modules.IAppModule.Data.ProductWrappers
             Metadata = new()
             {
                 CurrencyCode = product.metadata.isoCurrencyCode,
+                CurrencySymbol = RegionInfo.CurrentRegion.CurrencySymbol,
                 LocalizedDescription = product.metadata.localizedDescription,
                 LocalizedPrice = product.metadata.localizedPrice,
                 LocalizedPriceString = product.metadata.localizedPriceString,
