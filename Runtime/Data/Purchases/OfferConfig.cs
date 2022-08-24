@@ -18,8 +18,6 @@ namespace LittleBit.Modules.IAppModule.Data.Purchases
         [SerializeField] private IPurchaseInterfaceContainer layout;
         [SerializeField] private IOfferLayoutInterfaceContainer offerLayout;
         
-        [field: SerializeField] public bool IsFree { get; private set; }
-
         public IReadOnlyList<ProductConfig> Products => products;
         
         [Obsolete]

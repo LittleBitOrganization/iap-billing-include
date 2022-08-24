@@ -33,9 +33,9 @@ namespace LittleBit.Modules.IAppModule.Services
             _iapService.OnPurchasingFailed += OnPurchasingFailed;
         }
 
-        public void Purchase(OfferConfig offer, Action<bool> callback = null) 
-            => Purchase(offer.Id, callback, offer.IsFree);
-        
+        public void Purchase(OfferConfig offer, Action<bool> callback = null, bool freePurchase = false)
+            => Purchase(offer.Id, callback, freePurchase);
+
         public void Purchase(string id, Action<bool> callback, bool freePurchase)
         {
             if (!_purchaseService.IsInitialized) return;
@@ -47,8 +47,15 @@ namespace LittleBit.Modules.IAppModule.Services
             _isPurchasing = true;
             _callback = callback;
 
+            if (freePurchase)
+            {
+                OnPurchasingSuccess(id);
+                return;
+            }
+
             _iapService.Purchase(id, freePurchase);
         }
+        
 
         private void OnPurchasingSuccess(string id)
         {
@@ -63,7 +70,7 @@ namespace LittleBit.Modules.IAppModule.Services
             CompletePurchase(() => { _callback?.Invoke(true); });
         }
 
-        private void OnPurchasingFailed(string id) 
+        private void OnPurchasingFailed(string id)
             => CompletePurchase(() => { _callback?.Invoke(false); });
 
         private void CompletePurchase(Action callback)

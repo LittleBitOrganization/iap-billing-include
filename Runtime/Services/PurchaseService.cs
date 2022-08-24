@@ -26,6 +26,8 @@ namespace LittleBit.Modules.IAppModule.Services
         }
 
         public void Purchase(OfferConfig offer, Action<bool> callback) => _purchaseHandler.Purchase(offer, callback);
+
+        public void UnlockContent(OfferConfig offer) => _purchaseHandler.Purchase(offer, null, true);
         
         public IProductWrapper GetProductWrapper(string id) => _iapService.GetProductWrapper(id);
 
