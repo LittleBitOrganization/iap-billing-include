@@ -71,14 +71,21 @@ namespace LittleBit.Modules.IAppModule.Services
 
         public void Purchase(string id, bool freePurchase)
         {
+#if IAP_DEBUG || UNITY_EDITOR
+            var product = (GetProductWrapper(id) as EditorProductWrapper);
+
+            if (product is null) return;
+            
+            if (!product.Metadata.CanPurchase) return;
+            
+            product!.Purchase();
+            OnPurchasingSuccess?.Invoke(id);
+#else
+
             var product = _controller.products.WithID(id);
 
             if (product is {availableToPurchase: false}) return;
 
-#if IAP_DEBUG || UNITY_EDITOR
-            (GetProductWrapper(id) as EditorProductWrapper)!.Purchase();
-            OnPurchasingSuccess?.Invoke(id);
-#else
             if (freePurchase)
             {
                 OnPurchasingSuccess?.Invoke(id);
