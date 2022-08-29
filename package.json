@@ -10,6 +10,6 @@
     "name": "LittleBitGames"
   },
   "dependencies": {
-    "com.unity.purchasing": "4.1.3"
+    "com.unity.purchasing": "4.4.1"
   }
 }
