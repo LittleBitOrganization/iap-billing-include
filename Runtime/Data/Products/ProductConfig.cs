@@ -4,7 +4,7 @@ using UnityEngine.Purchasing;
 
 namespace LittleBit.Modules.IAppModule.Data.Products
 {
-    public abstract class ProductConfig : ScriptableObject
+    public abstract class ProductConfig : ScriptableObject, IProduct
     {
         [SerializeField] private ProductType productType = ProductType.Consumable;
 
