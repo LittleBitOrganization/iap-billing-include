@@ -42,6 +42,7 @@
 
 ```json
  "dependencies": {
+    "com.dbrizov.naughtyattributes": "https://github.com/dbrizov/NaughtyAttributes.git#upm",
     "com.littlebitgames.iapmodule": "https://github.com/LittleBitOrganization/evolution-engine-iap.git"
 }
 ```
