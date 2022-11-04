@@ -30,11 +30,9 @@ namespace LittleBit.Modules.IAppModule.Services
             IPurchaseHandler purchaseHandler, List<OfferConfig> offerConfigs)
         {
             _productCollection = new ProductCollections();
-
             _purchaseHandler = purchaseHandler;
             _offerConfigs = offerConfigs;
             _transactionsRestorer = transactionsRestorer;
-
             Init();
 
             UnityPurchasing.Initialize(this, _builder);

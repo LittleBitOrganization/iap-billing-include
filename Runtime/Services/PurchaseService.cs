@@ -9,6 +9,7 @@ namespace LittleBit.Modules.IAppModule.Services
     public class PurchaseService : IService
     {
         public event Action OnInitialized;
+        public event Action<string> OnPurchaseSuccess;
         public bool IsInitialized { get; private set; }
 
         private readonly PurchaseHandler _purchaseHandler;
@@ -21,7 +22,7 @@ namespace LittleBit.Modules.IAppModule.Services
         {
             _iapService = iapService;
             _purchaseHandler = new PurchaseHandler(this, iapService, purchaseCommandFactory, offerConfigs);
-
+            _iapService.OnPurchasingSuccess += (s) => OnPurchaseSuccess?.Invoke(s);
             Subscribe();
         }
 
