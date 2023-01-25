@@ -49,6 +49,12 @@ namespace LittleBit.Modules.IAppModule.Services.PurchaseProcessors
                             validPurchase = true;
                         }
 
+                        if ((int) google.purchaseState == 4)
+                        {
+                            Debug.Log("Deferred IAP, Not bought yet!");
+                            return PurchaseProcessingResult.Pending;
+                        }
+                        
                         Debug.Log(" product transactionID " + args.purchasedProduct.transactionID);
                         Debug.Log(" product definition.id " + args.purchasedProduct.definition.id);
                         Debug.Log(" product definition.storeSpecificId" + args.purchasedProduct.definition.storeSpecificId);
