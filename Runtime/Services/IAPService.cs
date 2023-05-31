@@ -128,6 +128,16 @@ namespace LittleBit.Modules.IAppModule.Services
         public void RestorePurchasedProducts(Action<bool> callback) =>
             _transactionsRestorer.Restore(_extensionProvider, callback);
 
+        public void OnInitializeFailed(InitializationFailureReason error)
+        {
+            Debug.LogError("Initialization failed - !" + error);
+        }
+
+        public void OnInitializeFailed(InitializationFailureReason error, string message)
+        {
+            Debug.LogError("Initialization failed - !"+error+ ". Message " + message);
+        }
+
         public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs purchaseEvent)
         {
             var result = _purchaseHandler.ProcessPurchase(purchaseEvent, (success) =>
@@ -148,9 +158,6 @@ namespace LittleBit.Modules.IAppModule.Services
 
             return result;
         }
-
-        public void OnInitializeFailed(InitializationFailureReason error) => Debug.LogError("Initialization failed!");
-
         public void OnPurchaseFailed(Product product, PurchaseFailureReason failureReason)
         {
             OnPurchasingFailed?.Invoke(product.definition.id);
