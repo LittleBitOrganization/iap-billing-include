@@ -21,6 +21,7 @@ namespace LittleBit.Modules.IAppModule.Services
         public event Action<string> OnPurchasingSuccess;
         public event Action<string> OnPurchasingFailed;
         public event Action OnInitializationComplete;
+        public event Action OnInitializationFailed;
 
         public bool IsInitialized { get; private set; }
 
@@ -119,6 +120,14 @@ namespace LittleBit.Modules.IAppModule.Services
 
         public void RestorePurchasedProducts(Action<bool> callback) =>
             _transactionsRestorer.Restore(_extensionProvider, callback);
+
+        public void OnInitializeFailed(InitializationFailureReason error, string message)
+        {
+            OnInitializationFailed?.Invoke();
+
+            Debug.LogError(message);
+            Debug.LogError(error.ToString());
+        }
 
         public PurchaseProcessingResult ProcessPurchase(PurchaseEventArgs purchaseEvent)
         {
