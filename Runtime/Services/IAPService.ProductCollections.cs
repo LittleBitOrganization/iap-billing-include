@@ -9,7 +9,7 @@ namespace LittleBit.Modules.IAppModule.Services
 {
     public partial class IAPService
     {
-        private class ProductCollections
+        public class ProductCollections
         {
             public Dictionary<string, ProductConfig> AllProducts { get; }
             private readonly Dictionary<string, EditorProductWrapper> _editorProductWrappers;
