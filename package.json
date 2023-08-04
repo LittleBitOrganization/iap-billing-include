@@ -8,5 +8,8 @@
   "category": "Module",
   "author": {
     "name": "LittleBitGames"
+  },
+  "dependencies": {
+    "com.unity.services.analytics": "5.0.0"
   }
 }
